@@ -3,7 +3,7 @@ RewriteEngine On
 # Enable CORS for all origins
 Header always set Access-Control-Allow-Origin "*"
 Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Cache-Control, Pragma, Expires"
 Header always set Access-Control-Max-Age "3600"
 
 # Handle preflight requests
