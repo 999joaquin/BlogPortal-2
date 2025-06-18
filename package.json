@@ -1,0 +1,13 @@
+{
+  "name": "blog-indonesia-backend",
+  "version": "1.0.0",
+  "description": "Indonesian Blog Backend for Railway",
+  "main": "index.php",
+  "scripts": {
+    "start": "php -S 0.0.0.0:$PORT",
+    "dev": "php -S localhost:8000"
+  },
+  "keywords": ["blog", "indonesia", "php", "mysql", "railway"],
+  "author": "Blog Indonesia",
+  "license": "MIT"
+}
