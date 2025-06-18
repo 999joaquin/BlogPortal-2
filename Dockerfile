@@ -17,10 +17,6 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 # Enable Apache modules
 RUN a2enmod rewrite headers
 
-# Configure Apache to listen on Railway's PORT
-RUN sed -i 's/Listen 80/Listen ${PORT:-80}/' /etc/apache2/ports.conf
-RUN sed -i 's/:80/:${PORT:-80}/' /etc/apache2/sites-available/000-default.conf
-
 # Set working directory
 WORKDIR /var/www/html
 
@@ -34,19 +30,28 @@ RUN chown -R www-data:www-data /var/www/html \
 # Configure Apache
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-# Create a simple startup script
+# Configure Apache for Railway's dynamic port
+RUN sed -i 's/Listen 80/Listen ${PORT}/' /etc/apache2/ports.conf
+RUN sed -i 's/<VirtualHost \*:80>/<VirtualHost *:${PORT}>/' /etc/apache2/sites-available/000-default.conf
+
+# Create startup script that handles Railway's PORT variable
 RUN echo '#!/bin/bash\n\
-echo "Starting Apache on port ${PORT:-80}"\n\
-echo "Environment variables:"\n\
-env | grep -E "(MYSQL|PORT)" || echo "No MySQL env vars found"\n\
-apache2-foreground' > /start.sh && chmod +x /start.sh
+set -e\n\
+echo "=== Railway Startup Script ==="\n\
+echo "PORT: ${PORT}"\n\
+echo "Environment check:"\n\
+env | grep -E "(MYSQL|PORT)" | head -10 || echo "No MySQL/PORT env vars found"\n\
+\n\
+# Replace PORT placeholder in Apache config\n\
+sed -i "s/\${PORT}/${PORT}/g" /etc/apache2/ports.conf\n\
+sed -i "s/\${PORT}/${PORT}/g" /etc/apache2/sites-available/000-default.conf\n\
+\n\
+echo "Apache will listen on port: ${PORT}"\n\
+echo "Starting Apache..."\n\
+exec apache2-foreground' > /start.sh && chmod +x /start.sh
 
-# Expose the port
-EXPOSE ${PORT:-80}
+# Expose the port (Railway will override this)
+EXPOSE 80
 
-# Remove health check for now to avoid timeout issues
-# HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-#   CMD curl -f http://localhost:${PORT:-80}/ || exit 1
-
-# Start Apache
+# Use the startup script
 CMD ["/start.sh"]
