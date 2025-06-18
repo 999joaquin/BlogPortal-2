@@ -32,8 +32,8 @@ RewriteRule ^api/logout/?$ api/logout.php [L]
 # Admin routes
 RewriteRule ^admin/(.*)$ admin/$1 [L]
 
-# Redirect to index.html if no file specified
-DirectoryIndex index.html admin/login.html
+# Redirect to index.php if no file specified
+DirectoryIndex index.php
 
 # Pretty URLs for articles (if accessed directly on Railway)
 RewriteRule ^artikel/([0-9]+)/?$ artikel.html?id=$1 [L]

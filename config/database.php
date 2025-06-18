@@ -2,7 +2,7 @@
 // Database configuration for Railway MySQL
 // Parse the MYSQL_PUBLIC_URL to get connection details
 
-$mysql_url = $_ENV['MYSQL_PUBLIC_URL'] ?? getenv('MYSQL_PUBLIC_URL');
+$mysql_url = getenv('MYSQL_PUBLIC_URL');
 
 if ($mysql_url) {
     // Parse the MySQL URL format: mysql://user:password@host:port/database
@@ -13,17 +13,18 @@ if ($mysql_url) {
     $username = $url_parts['user'];
     $password = $url_parts['pass'];
     $database = ltrim($url_parts['path'], '/'); // Remove leading slash
+    
+    error_log("Using MYSQL_PUBLIC_URL - Host: $host, Port: $port, Database: $database, User: $username");
 } else {
     // Fallback to individual environment variables
-    $host = $_ENV['MYSQLHOST'] ?? getenv('MYSQLHOST') ?? 'yamanote.proxy.rlwy.net';
-    $port = $_ENV['MYSQLPORT'] ?? getenv('MYSQLPORT') ?? '43486';
-    $database = $_ENV['MYSQLDATABASE'] ?? getenv('MYSQLDATABASE') ?? 'blog_indonesia';
-    $username = $_ENV['MYSQLUSER'] ?? getenv('MYSQLUSER') ?? 'root';
-    $password = $_ENV['MYSQLPASSWORD'] ?? getenv('MYSQLPASSWORD') ?? 'GUcZPVvqjoBRfYEjDsKgnKlCtVCUOxKQ';
+    $host = getenv('MYSQLHOST') ?: 'localhost';
+    $port = getenv('MYSQLPORT') ?: '3306';
+    $database = getenv('MYSQLDATABASE') ?: 'railway';
+    $username = getenv('MYSQLUSER') ?: 'root';
+    $password = getenv('MYSQLPASSWORD') ?: '';
+    
+    error_log("Using individual env vars - Host: $host, Port: $port, Database: $database, User: $username");
 }
-
-// Debug logging (remove in production)
-error_log("Database config - Host: $host, Port: $port, Database: $database, User: $username");
 
 try {
     $dsn = "mysql:host=$host;port=$port;dbname=$database;charset=utf8mb4";
@@ -32,7 +33,7 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES => false,
         PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
-        PDO::ATTR_TIMEOUT => 30, // 30 second timeout
+        PDO::ATTR_TIMEOUT => 30,
         PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true
     ];
     
@@ -52,7 +53,7 @@ try {
         http_response_code(500);
         echo json_encode([
             'error' => 'Database connection failed',
-            'message' => 'Unable to connect to database. Please check Railway MySQL service.',
+            'message' => 'Unable to connect to Railway MySQL database.',
             'debug' => [
                 'host' => $host,
                 'port' => $port,

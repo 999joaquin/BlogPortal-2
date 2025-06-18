@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     zip \
     unzip \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
@@ -25,9 +26,6 @@ COPY . .
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
-
-# Create uploads directory if needed
-RUN mkdir -p uploads && chown -R www-data:www-data uploads
 
 # Configure Apache
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
