@@ -1,126 +1,157 @@
 <?php
-// Railway Backend Status Page
+// Simple Railway Backend Status Page - Minimal version for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Set a timeout for database operations
+set_time_limit(30);
 ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog Indonesia - Railway Backend</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Railway Backend - Blog Indonesia</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .status { padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        .btn { display: inline-block; padding: 8px 16px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; margin: 5px; }
+        .btn:hover { background: #0056b3; }
+    </style>
 </head>
-<body class="bg-light">
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">
-                            <i class="fas fa-server me-2"></i>Blog Indonesia - Railway Backend
-                        </h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h5>🚂 Backend Status: <span class="badge bg-success">Running</span></h5>
-                                <p class="text-muted">Railway deployment successful!</p>
-                                
-                                <?php
-                                try {
-                                    require_once 'config/database.php';
-                                    echo '<div class="alert alert-success">
-                                        <i class="fas fa-database me-2"></i>Database connection successful!
-                                    </div>';
-                                    
-                                    // Test database
-                                    $stmt = $pdo->query("SELECT COUNT(*) as count FROM artikel WHERE status = 'published'");
-                                    $articleCount = $stmt->fetch()['count'];
-                                    
-                                    $stmt = $pdo->query("SELECT COUNT(*) as count FROM kategori");
-                                    $categoryCount = $stmt->fetch()['count'];
-                                    
-                                    $stmt = $pdo->query("SELECT COUNT(*) as count FROM penulis");
-                                    $authorCount = $stmt->fetch()['count'];
-                                    
-                                    echo "<div class='row text-center mt-3'>";
-                                    echo "<div class='col-4'>";
-                                    echo "<div class='card bg-info text-white'>";
-                                    echo "<div class='card-body'>";
-                                    echo "<h3>$articleCount</h3>";
-                                    echo "<small>Published Articles</small>";
-                                    echo "</div></div></div>";
-                                    
-                                    echo "<div class='col-4'>";
-                                    echo "<div class='card bg-success text-white'>";
-                                    echo "<div class='card-body'>";
-                                    echo "<h3>$categoryCount</h3>";
-                                    echo "<small>Categories</small>";
-                                    echo "</div></div></div>";
-                                    
-                                    echo "<div class='col-4'>";
-                                    echo "<div class='card bg-warning text-white'>";
-                                    echo "<div class='card-body'>";
-                                    echo "<h3>$authorCount</h3>";
-                                    echo "<small>Authors</small>";
-                                    echo "</div></div></div>";
-                                    echo "</div>";
-                                    
-                                } catch (Exception $e) {
-                                    echo '<div class="alert alert-danger">
-                                        <i class="fas fa-exclamation-triangle me-2"></i>Database connection failed: ' . htmlspecialchars($e->getMessage()) . '
-                                    </div>';
-                                    
-                                    echo '<div class="alert alert-info">';
-                                    echo '<h6>Environment Variables Check:</h6>';
-                                    echo '<ul>';
-                                    echo '<li>MYSQL_PUBLIC_URL: ' . (getenv('MYSQL_PUBLIC_URL') ? '✅ Set' : '❌ Not set') . '</li>';
-                                    echo '<li>MYSQLHOST: ' . (getenv('MYSQLHOST') ? '✅ Set' : '❌ Not set') . '</li>';
-                                    echo '<li>PHP Version: ' . PHP_VERSION . '</li>';
-                                    echo '</ul>';
-                                    echo '</div>';
-                                }
-                                ?>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <h6><i class="fas fa-link me-2"></i>API Endpoints:</h6>
-                                <div class="list-group">
-                                    <a href="api/articles.php" target="_blank" class="list-group-item list-group-item-action">
-                                        <i class="fas fa-newspaper me-2"></i>Articles API
-                                    </a>
-                                    <a href="api/categories.php" target="_blank" class="list-group-item list-group-item-action">
-                                        <i class="fas fa-tags me-2"></i>Categories API
-                                    </a>
-                                    <a href="api/authors.php" target="_blank" class="list-group-item list-group-item-action">
-                                        <i class="fas fa-users me-2"></i>Authors API
-                                    </a>
-                                    <a href="test-connection.php" target="_blank" class="list-group-item list-group-item-action">
-                                        <i class="fas fa-stethoscope me-2"></i>Database Test
-                                    </a>
-                                </div>
-                                
-                                <div class="mt-3">
-                                    <a href="admin/login.html" class="btn btn-primary w-100">
-                                        <i class="fas fa-user-shield me-2"></i>Admin Panel
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <hr>
-                        
-                        <div class="text-center">
-                            <small class="text-muted">
-                                <i class="fas fa-info-circle me-1"></i>
-                                Railway Backend for Blog Indonesia | 
-                                PHP <?php echo PHP_VERSION; ?> | 
-                                Server Time: <?php echo date('Y-m-d H:i:s'); ?>
-                            </small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<body>
+    <div class="container">
+        <h1>🚂 Railway Backend Status</h1>
+        
+        <div class="status success">
+            ✅ <strong>Apache is running!</strong> PHP <?php echo PHP_VERSION; ?>
+        </div>
+        
+        <div class="status info">
+            📊 <strong>Server Info:</strong><br>
+            Server Time: <?php echo date('Y-m-d H:i:s T'); ?><br>
+            Port: <?php echo $_ENV['PORT'] ?? getenv('PORT') ?? '80'; ?><br>
+            Request URI: <?php echo $_SERVER['REQUEST_URI'] ?? 'N/A'; ?>
+        </div>
+
+        <h3>🔧 Environment Variables</h3>
+        <div class="status info">
+            <pre><?php
+            $env_vars = [
+                'PORT' => getenv('PORT') ?: 'Not set',
+                'MYSQL_PUBLIC_URL' => getenv('MYSQL_PUBLIC_URL') ? 'Set (' . strlen(getenv('MYSQL_PUBLIC_URL')) . ' chars)' : 'Not set',
+                'MYSQLHOST' => getenv('MYSQLHOST') ?: 'Not set',
+                'MYSQLPORT' => getenv('MYSQLPORT') ?: 'Not set',
+                'MYSQLDATABASE' => getenv('MYSQLDATABASE') ?: 'Not set',
+                'MYSQLUSER' => getenv('MYSQLUSER') ?: 'Not set',
+                'MYSQLPASSWORD' => getenv('MYSQLPASSWORD') ? 'Set (' . strlen(getenv('MYSQLPASSWORD')) . ' chars)' : 'Not set'
+            ];
+            
+            foreach ($env_vars as $key => $value) {
+                echo "$key: $value\n";
+            }
+            ?></pre>
+        </div>
+
+        <h3>🗄️ Database Connection Test</h3>
+        <?php
+        try {
+            // Set shorter timeout for database connection
+            ini_set('mysql.connect_timeout', 10);
+            ini_set('default_socket_timeout', 10);
+            
+            if (file_exists('config/database.php')) {
+                echo '<div class="status info">📁 Database config file found</div>';
+                
+                // Capture any output from database.php
+                ob_start();
+                $start_time = microtime(true);
+                
+                require_once 'config/database.php';
+                
+                $load_time = round((microtime(true) - $start_time) * 1000, 2);
+                $output = ob_get_clean();
+                
+                if ($output) {
+                    echo '<div class="status warning">⚠️ Database config output:<pre>' . htmlspecialchars($output) . '</pre></div>';
+                }
+                
+                echo '<div class="status info">⏱️ Config loaded in ' . $load_time . 'ms</div>';
+                
+                if (isset($pdo)) {
+                    // Test basic connection
+                    $stmt = $pdo->query("SELECT 1 as test, NOW() as server_time");
+                    $result = $stmt->fetch();
+                    
+                    echo '<div class="status success">✅ Database connection successful!</div>';
+                    echo '<div class="status info">🕐 Database server time: ' . $result['server_time'] . '</div>';
+                    
+                    // Test tables
+                    $tables_status = [];
+                    foreach (['artikel', 'kategori', 'penulis'] as $table) {
+                        try {
+                            $stmt = $pdo->query("SELECT COUNT(*) as count FROM $table");
+                            $count = $stmt->fetch()['count'];
+                            $tables_status[] = "$table: $count records";
+                        } catch (Exception $e) {
+                            $tables_status[] = "$table: Error - " . $e->getMessage();
+                        }
+                    }
+                    
+                    echo '<div class="status info">📊 Tables:<br>' . implode('<br>', $tables_status) . '</div>';
+                    
+                } else {
+                    echo '<div class="status error">❌ PDO object not created</div>';
+                }
+                
+            } else {
+                echo '<div class="status error">❌ Database config file not found</div>';
+            }
+            
+        } catch (Exception $e) {
+            echo '<div class="status error">❌ Database Error: ' . htmlspecialchars($e->getMessage()) . '</div>';
+            echo '<div class="status info">🔍 Error details:<br>';
+            echo 'File: ' . $e->getFile() . '<br>';
+            echo 'Line: ' . $e->getLine() . '<br>';
+            echo 'Code: ' . $e->getCode() . '</div>';
+        }
+        ?>
+
+        <h3>🔗 Quick Tests</h3>
+        <div>
+            <a href="test-connection.php" class="btn" target="_blank">🧪 Detailed DB Test</a>
+            <a href="api/categories.php" class="btn" target="_blank">📂 Categories API</a>
+            <a href="api/articles.php" class="btn" target="_blank">📄 Articles API</a>
+            <a href="admin/login.html" class="btn" target="_blank">🔐 Admin Panel</a>
+        </div>
+
+        <h3>📋 File Structure Check</h3>
+        <div class="status info">
+            <pre><?php
+            $important_files = [
+                'config/database.php',
+                'api/articles.php',
+                'api/categories.php',
+                'admin/login.html',
+                '.htaccess'
+            ];
+            
+            foreach ($important_files as $file) {
+                $exists = file_exists($file);
+                $size = $exists ? filesize($file) : 0;
+                echo ($exists ? '✅' : '❌') . " $file" . ($exists ? " ($size bytes)" : '') . "\n";
+            }
+            ?></pre>
+        </div>
+
+        <div class="status info">
+            <small>🆔 Request ID: <?php echo uniqid(); ?> | Generated: <?php echo date('Y-m-d H:i:s'); ?></small>
         </div>
     </div>
 </body>
