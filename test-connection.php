@@ -17,7 +17,7 @@ try {
     require_once 'config/database.php';
     
     // Test basic connection
-    $stmt = $pdo->query("SELECT 1 as test, NOW() as current_time");
+    $stmt = $pdo->query("SELECT 1 as test, NOW() as server_time");
     $result = $stmt->fetch();
     
     // Get database info
@@ -50,7 +50,7 @@ try {
         'database' => [
             'name' => $dbInfo['db_name'],
             'mysql_version' => $dbInfo['mysql_version'],
-            'server_time' => $result['current_time']
+            'server_time' => $result['server_time']
         ],
         'tables' => $tables,
         'published_articles' => $publishedCount,
